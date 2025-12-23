@@ -29,7 +29,7 @@ This project analyzes historical retail sales data to evaluate how holidays and 
 - Retail and promotional performance analysis
 
 ## Project Context
-This project originated as a group coursework assignment for ITC 295 Database Management Systems at Missouri State University.
+This project originated as a group coursework assignment for ITC 295 at Missouri State University.
 
 The version presented here reflects my individual contributions and post-course refinements, including query restructuring, data cleaning, and analytical interpretation.
 
