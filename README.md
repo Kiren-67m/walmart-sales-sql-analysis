@@ -34,6 +34,22 @@ This project originated as a group coursework assignment for ITC 295 at Missouri
 The version presented here reflects my individual contributions and post-course refinements, including query restructuring, data cleaning, and analytical interpretation.
 
 
+## Repository and execution guide
+
+The SQL uses MySQL syntax. Run it only in a dedicated project database: the setup and cleaning scripts recreate or truncate project tables.
+
+1. Run `sql/01_create_tables.sql` to create the database and final tables.
+2. Run section A of `sql/02_load_and_clean.sql` to create the staging tables.
+3. Import the original CSVs into `stores_raw`, `store_features_raw`, `store1_raw`, `store12_raw` and `store45_raw` using matching column order.
+4. Run sections B and C of that file to clean the staging data, populate final tables and build views.
+5. Run `sql/03_analysis_queries.sql` to reproduce the analyses.
+
+The source CSVs are not included. Screenshots below preserve the recorded query results; a fresh data run requires the original files.
+
+## Interpretation limits
+
+The sample covers three stores, so results should not be generalized to the full retailer. Holiday and promotion comparisons are descriptive associations, without causal controls. Queries 1 and 3 average store-department-week rows; queries using `weekly_store_sales` aggregate departments to store-week totals. These grains should not be treated as interchangeable.
+
 ## Analysis Results
 
 ### Analysis 1: Store Overview
