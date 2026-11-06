@@ -1,7 +1,7 @@
-# Retail Sales Analysis: Impact of Holidays and Promotional Markdowns
+# Retail Sales Analysis: Holidays and Promotional Markdowns
 
 ## Project Summary
-This project analyzes historical retail sales data to evaluate how holidays and promotional markdowns influence weekly sales performance across stores and departments. Using SQL, the analysis focuses on sales efficiency, seasonal demand patterns, promotional effectiveness, and department-level holiday behavior.
+This project uses SQL to compare historical weekly sales across three stores and their departments, examining store sales efficiency, holiday patterns and associations with promotional markdowns.
 
 ## Dataset
 - Weekly sales data from three retail stores (2010–2012)
@@ -14,13 +14,13 @@ This project analyzes historical retail sales data to evaluate how holidays and 
 - Which stores generate the highest yearly sales and sales per square foot?
 - Do holiday weeks outperform non-holiday weeks in sales?
 - How are promotional markdowns associated with weekly sales?
-- Do major holidays drive uniform sales increases across departments?
+- How do department sales differ between the selected Super Bowl week and the preceding week?
 
-## Key Findings
-- Larger stores consistently outperform smaller stores in both total sales and sales efficiency.
-- Holiday weeks generate higher average sales across all stores.
-- Promotional markdowns are positively associated with higher weekly sales.
-- Major holidays drive sales increases in specific departments rather than across the entire store.
+## Findings in the three-store sample
+- Store 1 has the highest annual sales and sales per square foot in all three recorded years. In 2011, its sales were $80.92 million and $534.79 per square foot.
+- Holiday weeks have higher average department-week sales in all three stores; for Store 1, the recorded averages are $23,039.39 versus $21,609.63.
+- Weeks with promotional markdowns have higher average store-week sales in all three stores. This is an association, not an estimate of promotion effectiveness.
+- The Store 1 Super Bowl comparison shows department-level differences between two selected weeks; it does not establish a holiday effect.
 
 ## Tools & Skills
 - SQL (joins, aggregations, subqueries, views)
