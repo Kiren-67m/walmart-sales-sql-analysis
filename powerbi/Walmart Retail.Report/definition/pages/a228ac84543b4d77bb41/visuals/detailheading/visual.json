@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "detailheading",
+  "position": {
+    "x": 22,
+    "y": 64,
+    "width": 641,
+    "height": 83,
+    "z": 10,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "DEPARTMENT SALES  /  STORE-WIDE MARKDOWNS",
+                    "textStyle": {
+                      "fontFamily": "Consolas",
+                      "fontSize": "11pt",
+                      "fontWeight": "normal",
+                      "color": "#315F8A"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Departments & markdowns",
+                    "textStyle": {
+                      "fontFamily": "DIN",
+                      "fontSize": "34pt",
+                      "fontWeight": "bold",
+                      "color": "#172637"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

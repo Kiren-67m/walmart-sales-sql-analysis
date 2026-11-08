@@ -1,0 +1,20 @@
+relationship eb9e2428-ce5c-590b-800d-3c9eba3b9463
+	fromColumn: 'Store Week'.'Store ID'
+	toColumn: Store.'Store ID'
+
+relationship 549bd3b2-2e14-590c-bd67-37f257c1e495
+	fromColumn: 'Store Week'.'Week Ending'
+	toColumn: Week.'Week Ending'
+
+relationship 4a294597-22dc-512f-96a2-e486943a46b9
+	fromColumn: 'Department Week'.'Store ID'
+	toColumn: Store.'Store ID'
+
+relationship 10cfa0fd-5fe3-590c-b4da-21bb328a136d
+	fromColumn: 'Department Week'.'Week Ending'
+	toColumn: Week.'Week Ending'
+
+relationship a59e989e-cf5a-5648-a6f0-1ab75d95d1d9
+	fromColumn: 'Department Week'.'Department ID'
+	toColumn: Department.'Department ID'
+

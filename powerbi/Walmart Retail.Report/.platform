@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Walmart Retail"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "45c00d78-57ea-46f7-880f-14e2bd64add7"
+  }
+}

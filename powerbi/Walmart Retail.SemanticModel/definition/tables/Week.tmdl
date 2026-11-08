@@ -1,0 +1,50 @@
+table Week
+	lineageTag: 2ff786ae-7ecc-4501-9721-9cbdc6763e75
+
+	column 'Week Ending'
+		dataType: dateTime
+		formatString: MMM d, yyyy
+		lineageTag: 70e71373-7851-433c-a5d0-7070ff5f27b8
+		summarizeBy: none
+		sourceColumn: week_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: a10ff887-a9d1-4e01-8f18-3807a830e4f3
+		summarizeBy: none
+		sourceColumn: calendar_year
+
+	column Month
+		dataType: string
+		lineageTag: 4ea06522-6da5-4813-8ebf-433224198b53
+		summarizeBy: none
+		sourceColumn: month_label
+
+	column 'Week Type'
+		dataType: string
+		lineageTag: 863caf75-5882-4861-a44e-210e4514e471
+		summarizeBy: none
+		sourceColumn: week_type
+
+	column 'Month Start' = DATE(YEAR('Week'[Week Ending]), MONTH('Week'[Week Ending]), 1)
+		dataType: dateTime
+		formatString: MMM yyyy
+		lineageTag: b8c2f2e3-ea0a-4d6e-b8de-236d3dfa4dad
+		summarizeBy: none
+
+	partition Week = m
+		mode: import
+		source =
+				let
+					Raw = Csv.Document(File.Contents(ExportFolder & "\dim_week.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+					Typed = Table.TransformColumnTypes(Headers, {{"week_date", type date}, {"calendar_year", Int64.Type}, {"month_label", type text}, {"is_holiday", Int64.Type}}, "en-US"),
+					SalesDates = Table.SelectRows(Typed, each [week_date] >= #date(2010, 2, 5) and [week_date] <= #date(2012, 10, 26)),
+					Labeled = Table.AddColumn(SalesDates, "week_type", each if [is_holiday] = 1 then "Holiday" else "Regular", type text),
+					Selected = Table.SelectColumns(Labeled, {"week_date", "calendar_year", "month_label", "week_type"})
+				in
+					Selected
+

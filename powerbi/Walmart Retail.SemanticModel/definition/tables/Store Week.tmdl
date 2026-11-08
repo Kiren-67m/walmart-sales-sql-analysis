@@ -1,0 +1,120 @@
+table 'Store Week'
+	lineageTag: b5dc7beb-6934-48ef-837e-707e0671a660
+
+	/// Recorded store-week sales summed over the selected stores and weeks.
+	measure 'Total Sales' = SUM('Store Week'[Weekly Sales])
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: e8a85810-8081-4dd8-88e4-206931bd3191
+
+	/// Selected stores with recorded sales.
+	measure Stores = DISTINCTCOUNT('Store Week'[Store ID])
+		formatString: #,0
+		lineageTag: 4a883192-82f8-4c33-9605-05f8a2bb6d53
+
+	/// Distinct Friday week labels with recorded sales.
+	measure 'Observed Weeks' = DISTINCTCOUNT('Store Week'[Week Ending])
+		formatString: #,0
+		lineageTag: bd0bedaf-88a9-4fd0-ad56-c56a6843eb07
+
+	/// Average across observed store-week rows.
+	measure 'Avg Store Week Sales' = AVERAGE('Store Week'[Weekly Sales])
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 5794d7bd-6090-4fb7-985d-5d9f51edb539
+
+	/// Mean sales per square foot across the observed store-weeks.
+	measure 'Avg Weekly Sales per Sq Ft' = AVERAGE('Store Week'[Sales per Sq Ft])
+		formatString: $0.00
+		lineageTag: acf53c50-d3db-4e63-af8a-ca4f7b5db82c
+
+	/// Trailing four-week average from MySQL, including the selected week. Earlier weeks can contribute across a year filter.
+	measure 'Four Week Average' = IF(COUNT('Store Week'[Rolling 4 Week Sales]) > 0, SUM('Store Week'[Rolling 4 Week Sales]))
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 2460dcc6-052f-421e-b6c7-8d68af6fd5b4
+
+	/// Sum of recorded markdown amounts. Missing fields remain unknown.
+	measure 'Reported Markdowns' = SUM('Store Week'[Reported Markdown])
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 7090bce5-8155-4ac6-8577-5ca5391e0981
+
+	/// Share of store-weeks with at least one reported markdown amount.
+	measure 'Markdown Reporting Coverage' = DIVIDE(COUNT('Store Week'[Reported Markdown]), COUNTROWS('Store Week'))
+		formatString: 0.0%
+		lineageTag: 1b8c4ed6-03e2-4cda-b16c-e1764e5944a0
+
+	/// Store-weeks with at least one reported markdown amount.
+	measure 'Reporting Store Weeks' = COUNT('Store Week'[Reported Markdown])
+		formatString: #,0
+		lineageTag: 891599e1-3a2b-40c5-b992-677bed1a5d5d
+
+	/// Number of store-week sales observations in the selection.
+	measure 'Observed Store Weeks' = COUNTROWS('Store Week')
+		formatString: #,0
+		lineageTag: 2212a568-1bcb-4335-a07d-2ad0c4604482
+
+	column 'Store ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e4499252-8e5f-4e89-903e-c4e7508b6988
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column 'Week Ending'
+		dataType: dateTime
+		isHidden
+		formatString: MMM d, yyyy
+		lineageTag: 44131e25-0262-4c70-b9aa-64bc3fc9155f
+		summarizeBy: none
+		sourceColumn: week_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Weekly Sales'
+		dataType: decimal
+		isHidden
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 7ad3ec9b-534d-4280-8990-42b7f6ca6c67
+		summarizeBy: none
+		sourceColumn: weekly_sales
+
+	column 'Sales per Sq Ft'
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: 126990de-a872-4d60-a16b-4c1ca62e2071
+		summarizeBy: none
+		sourceColumn: sales_per_sqft
+
+	column 'Reported Markdown'
+		dataType: decimal
+		isHidden
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: cf963e2e-29ad-4d9e-8d35-9e236a27c825
+		summarizeBy: none
+		sourceColumn: reported_markdown_total
+
+	column 'Markdown Status'
+		dataType: string
+		lineageTag: 012bc886-7c47-4e0e-9955-d65c787095dd
+		summarizeBy: none
+		sourceColumn: markdown_status
+
+	column 'Rolling 4 Week Sales'
+		dataType: decimal
+		isHidden
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 4d6a9010-f46e-4062-9d04-b3718ee60f3d
+		summarizeBy: none
+		sourceColumn: rolling_4_week_avg_sales
+
+	partition 'Store Week' = m
+		mode: import
+		source =
+				let
+					Raw = Csv.Document(File.Contents(ExportFolder & "\fact_store_week.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+					Typed = Table.TransformColumnTypes(Headers, {{"store_id", Int64.Type}, {"week_date", type date}, {"weekly_sales", Currency.Type}, {"sales_per_sqft", type number}, {"reported_markdown_total", Currency.Type}, {"markdown_status", type text}, {"rolling_4_week_avg_sales", Currency.Type}}, "en-US"),
+					Selected = Table.SelectColumns(Typed, {"store_id", "week_date", "weekly_sales", "sales_per_sqft", "reported_markdown_total", "markdown_status", "rolling_4_week_avg_sales"})
+				in
+					Selected
+

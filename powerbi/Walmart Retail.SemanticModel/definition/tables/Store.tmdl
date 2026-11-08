@@ -1,0 +1,43 @@
+table Store
+	lineageTag: 1782d8ab-968e-45d7-91d1-dc2276103f87
+
+	column 'Store ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0c6d20bd-75b7-4a59-a148-19442f570fcf
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column 'Store Type'
+		dataType: string
+		lineageTag: db465927-19dc-4f3f-8e32-27e8aa3a9a89
+		summarizeBy: none
+		sourceColumn: store_type
+
+	column 'Floor Area'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5ac75331-49cf-411c-a5ba-729e7af610de
+		summarizeBy: none
+		sourceColumn: size_sqft
+
+	column Store
+		dataType: string
+		lineageTag: ae009d65-22e0-4834-b752-ae13f80d5762
+		summarizeBy: none
+		sourceColumn: store_label
+		sortByColumn: 'Store ID'
+
+	partition Store = m
+		mode: import
+		source =
+				let
+					Raw = Csv.Document(File.Contents(ExportFolder & "\dim_store.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+					Typed = Table.TransformColumnTypes(Headers, {{"store_id", Int64.Type}, {"store_type", type text}, {"size_sqft", Int64.Type}}, "en-US"),
+					Labeled = Table.AddColumn(Typed, "store_label", each "Store " & Text.From([store_id], "en-US"), type text),
+					Selected = Table.SelectColumns(Labeled, {"store_id", "store_type", "size_sqft", "store_label"})
+				in
+					Selected
+

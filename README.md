@@ -16,16 +16,16 @@ Compare department sales and share within the selected store and year. The markd
 
 ## SQL workflow
 
-1. **Validate the source.** The Python loader checks store and department keys, dates and holiday labels in five CSV files.
-2. **Build the MySQL model.** The schema and views keep department-week sales separate from store-week features and markdowns. The views calculate weekly sales, sales per square foot and a four-week moving average.
-3. **Reconcile and export.** Six SQL checks cover join integrity, coverage and totals. The loader reconciles the original sales total against MySQL and the CSVs written for Power BI.
-4. **Refresh the report.** Power BI imports the exports into a model with Store, Week and Department dimensions. Store and Week filter both fact tables, while Department filters the sales fact at department-week grain.
+1. **Validate the source.** The [Python loader](scripts/build_bi.py) checks store and department keys, dates and holiday labels in five CSV files.
+2. **Build the MySQL model.** The [schema and views](sql/bi/) keep department-week sales separate from store-week features and markdowns. The views calculate weekly sales, sales per square foot and a four-week moving average.
+3. **Reconcile and export.** Six [SQL checks](sql/bi/04_quality_checks.sql) cover join integrity, coverage and totals. The loader reconciles the original sales total against MySQL and the CSVs written for Power BI.
+4. **Refresh the report.** The [Power BI project](powerbi/) imports the exports into a model with Store, Week and Department dimensions. Store and Week filter both fact tables, while Department filters the sales fact at department-week grain.
 
 The historical sample contains 29,586 department-week sales records and 429 store-week sales totals. It covers 48 weeks in 2010, 52 in 2011 and 43 in 2012. Annual totals reflect those observed periods. Missing markdown amounts indicate missing reporting, and holiday or markdown comparisons describe associations within the sample.
 
 ## Reproduce the report
 
-The steps below describe the build used for the screenshots. They require the original CSVs and the SQL-to-Power-BI project files, which are kept separately from this screenshot release.
+Clone or download this repository and obtain the five original source CSVs separately. The loader builds the Power BI input files from those CSVs.
 
 1. Install Python 3, MySQL 8.0 or later with its client, and Power BI Desktop on Windows. Use a dedicated MySQL database for this project.
 2. Put `stores.csv`, `store_features.csv`, `store 1.csv`, `store 12.csv` and `Store 45.csv` in one directory.
@@ -35,8 +35,10 @@ The steps below describe the build used for the screenshots. They require the or
    python3 scripts/build_bi.py --data-dir /path/to/source-csvs
    ```
 
-4. Open `powerbi/Walmart Retail.pbip` in Power BI Desktop, keeping the two neighboring project folders with it. In **Transform data → Manage Parameters**, set `ExportFolder` to the Windows-accessible path to the generated `data/exports` directory. Select **Close & Apply** and **Refresh**.
+4. Open [Walmart Retail.pbip](powerbi/Walmart%20Retail.pbip) in Power BI Desktop, keeping the two neighboring project folders with it. In **Transform data → Manage Parameters**, set `ExportFolder` to the Windows-accessible path to the generated `data/exports` directory. Select **Close & Apply** and **Refresh**.
 5. With all slicers cleared, confirm that **Store overview** shows **$479.09M** in sales, **143** observed weeks and **3** stores. For **Departments & markdowns**, confirm the all-department sales total and **35.7%** markdown reporting coverage.
+
+[Detailed setup, connection options, export definitions and metric notes](docs/SQL_BI_SETUP.md)
 
 ## Original SQL analysis
 

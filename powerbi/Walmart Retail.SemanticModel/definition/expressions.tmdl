@@ -1,0 +1,3 @@
+expression ExportFolder = "Z:\Desktop\Projects\walmart-sales-sql-analysis\data\exports" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 7f49262a-69e1-4c83-a2a7-cde8f48dfbd8
+

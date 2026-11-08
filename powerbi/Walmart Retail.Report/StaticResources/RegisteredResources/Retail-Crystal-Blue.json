@@ -1,0 +1,40 @@
+{
+  "name": "Retail-Crystal-Blue.json",
+  "dataColors": [
+    "#315F8A",
+    "#7897BC",
+    "#527DAA",
+    "#9CBAD7",
+    "#698EAF",
+    "#B3CBE1"
+  ],
+  "firstLevelElements": "#172637",
+  "secondLevelElements": "#405467",
+  "thirdLevelElements": "#CCDDED",
+  "fourthLevelElements": "#57738E",
+  "background": "#FFFFFF",
+  "secondaryBackground": "#EAF3FC",
+  "tableAccent": "#4778A9",
+  "textClasses": {
+    "label": {
+      "fontFace": "Arial",
+      "color": "#405467",
+      "fontSize": 11
+    },
+    "title": {
+      "fontFace": "DIN",
+      "color": "#172637",
+      "fontSize": 13
+    },
+    "callout": {
+      "fontFace": "DIN",
+      "color": "#172637",
+      "fontSize": 29
+    },
+    "header": {
+      "fontFace": "Arial",
+      "color": "#172637",
+      "fontSize": 11
+    }
+  }
+}

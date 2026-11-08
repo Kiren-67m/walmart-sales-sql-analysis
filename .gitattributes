@@ -1,0 +1,3 @@
+# Preserve Desktop's Windows working-copy format; keep clean text diffs in Git.
+powerbi/** text eol=crlf whitespace=cr-at-eol,-blank-at-eof
+powerbi/**/*.png binary

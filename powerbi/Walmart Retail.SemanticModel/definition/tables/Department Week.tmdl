@@ -1,0 +1,63 @@
+table 'Department Week'
+	lineageTag: 0745fefc-c8d8-4c0a-970c-140814f44bea
+
+	/// Recorded department-week sales summed over the selection.
+	measure 'Department Sales' = SUM('Department Week'[Weekly Sales])
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 50475e1b-8c1e-4981-90fb-cd656a538ec9
+
+	/// Selected department sales as a share of all department sales within the same stores and weeks.
+	measure 'Department Share' = DIVIDE([Department Sales], CALCULATE([Department Sales], REMOVEFILTERS('Department')))
+		formatString: 0.0%
+		lineageTag: 555c1e0b-4622-4262-a8ec-7f943503bbf1
+
+	/// Sales for the ten highest department ranks in the current filter context. Ties share a rank.
+	measure 'Top Department Sales' = VAR CurrentSales = [Department Sales] RETURN IF(NOT ISBLANK(CurrentSales) && RANKX(ALLSELECTED('Department'), [Department Sales], CurrentSales, DESC, DENSE) <= 10, CurrentSales)
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 0fc1bf6e-154d-4b13-93d4-e5cf042824b6
+
+	column 'Store ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c5a629d8-21e5-4d85-9497-172a31a60c2a
+		summarizeBy: none
+		sourceColumn: store_id
+
+	column 'Department ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 75153e0f-69c9-4402-8b5d-45bbfddd89ff
+		summarizeBy: none
+		sourceColumn: department_id
+
+	column 'Week Ending'
+		dataType: dateTime
+		isHidden
+		formatString: MMM d, yyyy
+		lineageTag: 6e7a1d43-2a67-4aab-8f9b-1351dc2f19b3
+		summarizeBy: none
+		sourceColumn: week_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Weekly Sales'
+		dataType: decimal
+		isHidden
+		formatString: $#,0.00;($#,0.00);$0.00
+		lineageTag: 97b99a00-3934-4e2c-88b0-8e179c0bc5ea
+		summarizeBy: none
+		sourceColumn: weekly_sales
+
+	partition 'Department Week' = m
+		mode: import
+		source =
+				let
+					Raw = Csv.Document(File.Contents(ExportFolder & "\fact_department_week.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+					Typed = Table.TransformColumnTypes(Headers, {{"store_id", Int64.Type}, {"department_id", Int64.Type}, {"week_date", type date}, {"weekly_sales", Currency.Type}}, "en-US"),
+					Selected = Table.SelectColumns(Typed, {"store_id", "department_id", "week_date", "weekly_sales"})
+				in
+					Selected
+

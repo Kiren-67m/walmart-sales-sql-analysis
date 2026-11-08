@@ -1,0 +1,29 @@
+table Department
+	lineageTag: adcb0d3a-41cd-443f-b02f-bf6c28d56df3
+
+	column 'Department ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 55ebb4bc-4e3e-4dea-87e5-31b61135fe45
+		summarizeBy: none
+		sourceColumn: department_id
+
+	column Department
+		dataType: string
+		lineageTag: 7ef10978-da19-4ca4-8c85-7e491a3465bb
+		summarizeBy: none
+		sourceColumn: department_label
+		sortByColumn: 'Department ID'
+
+	partition Department = m
+		mode: import
+		source =
+				let
+					Raw = Csv.Document(File.Contents(ExportFolder & "\dim_department.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+					Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+					Typed = Table.TransformColumnTypes(Headers, {{"department_id", Int64.Type}, {"department_label", type text}}, "en-US"),
+					Selected = Table.SelectColumns(Typed, {"department_id", "department_label"})
+				in
+					Selected
+

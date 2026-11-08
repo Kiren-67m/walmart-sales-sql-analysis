@@ -1,0 +1,12 @@
+data/raw/
+data/exports/
+artifacts/
+docs/CONTINUE_HERE.md
+.venv/
+__pycache__/
+*.pyc
+.env
+*.cnf
+powerbi/**/.pbi/
+*.pbix
+*.pbit
