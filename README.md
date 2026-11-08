@@ -1,72 +1,59 @@
-# Retail Sales Analysis: Holidays and Promotional Markdowns
+# Walmart Retail Sales | MySQL + Power BI
 
-## Project Summary
-This project uses SQL to compare historical weekly sales across three stores and their departments, examining store sales efficiency, holiday patterns and associations with promotional markdowns.
+A retail sales analysis of three stores from February 2010 through October 2012. The Power BI report explores $479.09M in recorded sales across 143 observed weeks.
 
-## Dataset
-- Weekly sales data from three retail stores (2010–2012)
-- Store attributes including size and type
-- Promotional markdown activity and holiday indicators
-- External factors such as temperature and fuel prices
+## Store overview
 
-## Key Questions
-- How do store size and type relate to average weekly sales?
-- Which stores generate the highest yearly sales and sales per square foot?
-- Do holiday weeks outperform non-holiday weeks in sales?
-- How are promotional markdowns associated with weekly sales?
-- How do department sales differ between the selected Super Bowl week and the preceding week?
+![Power BI Store overview showing sales KPIs, a weekly trend, store rankings and holiday comparisons](assets/screenshots/power-bi-store-overview.png)
 
-## Findings in the three-store sample
-- Store 1 has the highest annual sales and sales per square foot in all three recorded years. In 2011, its sales were $80.92 million and $534.79 per square foot.
-- Holiday weeks have higher average department-week sales in all three stores; for Store 1, the recorded averages are $23,039.39 versus $21,609.63.
-- Weeks with promotional markdowns have higher average store-week sales in all three stores. This is an association, not an estimate of promotion effectiveness.
-- The Store 1 Super Bowl comparison shows department-level differences between two selected weeks; it does not establish a holiday effect.
+Use the store and year filters to compare weekly sales, the four-week moving average and sales per square foot.
 
-## Tools & Skills
-- SQL (joins, aggregations, subqueries, views)
-- Data cleaning and transformation
-- Business-oriented analytical reasoning
-- Retail and promotional performance analysis
+## Departments & markdowns
 
-## Project Context
-This project originated as a group coursework assignment for ITC 295 at Missouri State University.
+![Power BI Departments and markdowns showing the top ten departments, monthly sales and markdown reporting coverage](assets/screenshots/power-bi-departments-markdowns.png)
 
-The version presented here reflects my individual contributions and post-course refinements, including query restructuring, data cleaning, and analytical interpretation.
+Compare department sales and share within the selected store and year. The markdown section reports store-wide amounts and reporting coverage. Its measures respond to store and year.
 
+## SQL workflow
 
-## Repository and execution guide
+1. **Validate the source.** The Python loader checks store and department keys, dates and holiday labels in five CSV files.
+2. **Build the MySQL model.** The schema and views keep department-week sales separate from store-week features and markdowns. The views calculate weekly sales, sales per square foot and a four-week moving average.
+3. **Reconcile and export.** Six SQL checks cover join integrity, coverage and totals. The loader reconciles the original sales total against MySQL and the CSVs written for Power BI.
+4. **Refresh the report.** Power BI imports the exports into a model with Store, Week and Department dimensions. Store and Week filter both fact tables, while Department filters the sales fact at department-week grain.
 
-The SQL uses MySQL syntax. Run it only in a dedicated project database: the setup and cleaning scripts recreate or truncate project tables.
+The historical sample contains 29,586 department-week sales records and 429 store-week sales totals. It covers 48 weeks in 2010, 52 in 2011 and 43 in 2012. Annual totals reflect those observed periods. Missing markdown amounts indicate missing reporting, and holiday or markdown comparisons describe associations within the sample.
 
-1. Run `sql/01_create_tables.sql` to create the database and final tables.
-2. Run section A of `sql/02_load_and_clean.sql` to create the staging tables.
-3. Import the original CSVs into `stores_raw`, `store_features_raw`, `store1_raw`, `store12_raw` and `store45_raw` using matching column order.
-4. Run sections B and C of that file to clean the staging data, populate final tables and build views.
-5. Run `sql/03_analysis_queries.sql` to reproduce the analyses.
+## Reproduce the report
 
-The source CSVs are not included. Screenshots below preserve the recorded query results; a fresh data run requires the original files.
+The steps below describe the build used for the screenshots. They require the original CSVs and the SQL-to-Power-BI project files, which are kept separately from this screenshot release.
 
-## Interpretation limits
+1. Install Python 3, MySQL 8.0 or later with its client, and Power BI Desktop on Windows. Use a dedicated MySQL database for this project.
+2. Put `stores.csv`, `store_features.csv`, `store 1.csv`, `store 12.csv` and `Store 45.csv` in one directory.
+3. From the project root, run:
 
-The sample covers three stores, so results should not be generalized to the full retailer. Holiday and promotion comparisons are descriptive associations, without causal controls. Queries 1 and 3 average store-department-week rows; queries using `weekly_store_sales` aggregate departments to store-week totals. These grains should not be treated as interchangeable.
+   ```bash
+   python3 scripts/build_bi.py --data-dir /path/to/source-csvs
+   ```
 
-## Analysis Results
+4. Open `powerbi/Walmart Retail.pbip` in Power BI Desktop, keeping the two neighboring project folders with it. In **Transform data → Manage Parameters**, set `ExportFolder` to the Windows-accessible path to the generated `data/exports` directory. Select **Close & Apply** and **Refresh**.
+5. With all slicers cleared, confirm that **Store overview** shows **$479.09M** in sales, **143** observed weeks and **3** stores. For **Departments & markdowns**, confirm the all-department sales total and **35.7%** markdown reporting coverage.
 
-### Analysis 1: Store Overview
-![Analysis 1](assets/screenshots/analysis1_store_overview.png)
+## Original SQL analysis
 
-### Analysis 2: Yearly Sales and Sales per Square Foot
-![Analysis 2](assets/screenshots/analysis2_yearly_sales_efficiency.png)
+The project began as a group assignment for ITC 295 at Missouri State University. The SQL-to-Power-BI pipeline and report are my post-course extension. The [original SQL scripts](sql/) and their recorded results document the earlier analysis.
 
-### Analysis 3: Holiday vs Non-Holiday Sales
-![Analysis 3](assets/screenshots/analysis3_holiday_vs_nonholiday.png)
+- Store 1 had the highest sales and sales per square foot in all three observed years. In 2011, it recorded $80.92M and $534.79 per square foot.
+- Holiday weeks had higher average department-week sales at each store. Store 1 averaged $23,039.39 on holiday weeks and $21,609.63 on other weeks.
+- Weeks with reported promotional markdowns had higher average store-week sales at each store in the original comparison. The Super Bowl analysis compares one selected week with the preceding week.
 
-### Analysis 4: Promotional Markdowns and Sales
-![Analysis 4a](assets/screenshots/analysis4_avg_markdown_vs_sales.png)
-![Analysis 4b](assets/screenshots/analysis4_promotion_vs_no_promotion.png)
+<details>
+<summary>View the original SQL result screenshots</summary>
 
-### Analysis 5: Major Holiday Case Study – Super Bowl
-![Analysis 5](assets/screenshots/analysis5_superbowl_department_comparison.png)
+- [Store overview](assets/screenshots/analysis1_store_overview.png)
+- [Yearly sales and sales per square foot](assets/screenshots/analysis2_yearly_sales_efficiency.png)
+- [Holiday and non-holiday sales](assets/screenshots/analysis3_holiday_vs_nonholiday.png)
+- [Average markdown and sales](assets/screenshots/analysis4_avg_markdown_vs_sales.png)
+- [Sales by promotion reporting status](assets/screenshots/analysis4_promotion_vs_no_promotion.png)
+- [Super Bowl department comparison](assets/screenshots/analysis5_superbowl_department_comparison.png)
 
-
-
+</details>
